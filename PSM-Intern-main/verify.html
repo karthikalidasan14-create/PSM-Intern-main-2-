@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSM Certificate & Intern Verification</title>
+  <style>
+    :root {
+      --navy: #10264b;
+      --blue: #245fcb;
+      --bg: #f3f6fc;
+      --card: #ffffff;
+      --text: #17233c;
+      --muted: #64718a;
+      --line: #e0e7f1;
+      --ok: #16a34a;
+      --danger: #dc2626;
+      --warn: #b45309;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 30px 16px 60px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .header-card, .profile-card, .search-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(16, 38, 75, 0.04);
+    }
+    .eyebrow {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    h1 { color: var(--navy); font-size: 26px; margin-bottom: 8px; }
+    p.muted { color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .search-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    input[type="text"] {
+      flex: 1;
+      min-width: 220px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    button {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #1a4da8; }
+    .status-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .status-banner.valid { background: #f0fdf4; border: 2px solid var(--ok); color: #14532d; }
+    .status-banner.revoked { background: #fef2f2; border: 2px solid var(--danger); color: #7f1d1d; }
+    .status-banner.not-found { background: #fffbeb; border: 2px solid var(--warn); color: #78350f; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge.valid { background: #dcfce7; color: #15803d; }
+    .badge.revoked { background: #fee2e2; color: #b91c1c; }
+    .profile-hero {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .photo-frame {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid #ffffff;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      object-fit: cover;
+      background: #e2e8f0;
+      flex-shrink: 0;
+    }
+    .avatar-fallback {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .profile-meta h2 { font-size: 26px; color: var(--navy); margin-bottom: 4px; }
+    .profile-meta .domain { font-size: 16px; color: var(--muted); margin-bottom: 8px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--navy); }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      color: var(--navy);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    .section-badge {
+      background: var(--navy);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .detail-box {
+      background: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border-left: 3px solid var(--blue);
+    }
+    .detail-box .lbl { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 2px; }
+    .detail-box .val { font-size: 14px; font-weight: 700; color: var(--text); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
+    th { background: #f8fafc; font-weight: 700; color: var(--navy); }
+    .total-row td { background: #f8fafc; font-weight: 800; border-top: 2px solid #cbd5e1; }
+    .feedback-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 14px;
+      font-style: italic;
+      color: #1e3a8a;
+      font-size: 14px;
+    }
+    .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .btn-secondary { background: #e2e8f0; color: var(--text); text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-block; }
+    .btn-primary { background: var(--blue); color: white; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="search-card">
+      <p class="eyebrow">PROBLEM SOLVING MIND · CREDENTIAL VERIFICATION</p>
+      <h1>Public Certificate & Intern Verification</h1>
+      <p class="muted">Enter an intern ID (e.g. PSM001) or Certificate ID to instantly verify credentials and mentor marks.</p>
+      <form id="verifyForm" class="search-row">
+        <input id="certificateId" type="text" placeholder="Enter Certificate ID or Intern ID (e.g. PSM001)" required>
+        <button type="submit">Verify Now</button>
+      </form>
+    </div>
+
+    <div id="statusContainer"></div>
+    <div id="profileContainer"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    // Fixed Firebase Configuration (No syntax errors)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAymQ8feqFJwipara-YMCGuAL_gKqnO_PI",
+      authDomain: "psm-certificate-verifica-e0dfb.firebaseapp.com",
+      projectId: "psm-certificate-verifica-e0dfb",
+      storageBucket: "psm-certificate-verifica-e0dfb.firebasestorage.app",
+      messagingSenderId: "344469068392",
+      appId: "1:344469068392:web:e593a388f32324ded039dd"
+    };
+
+    let db = null;
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+    } catch (e) {
+      console.warn("Firebase initialization note:", e);
+    }
+
+    const form = document.getElementById("verifyForm");
+    const input = document.getElementById("certificateId");
+    const statusContainer = document.getElementById("statusContainer");
+    const profileContainer = document.getElementById("profileContainer");
+
+    // Auto-detect query parameter on page load e.g. verify.html?id=PSM001
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialId = urlParams.get("id") || urlParams.get("certificate_id") || "";
+    if (initialId) {
+      input.value = initialId;
+      executeVerification(initialId);
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (val) executeVerification(val);
+    });
+
+    async function executeVerification(id) {
+      statusContainer.innerHTML = "<div class='status-banner not-found'>Verifying credential in registry...</div>";
+      profileContainer.innerHTML = "";
+
+      // 1. Try local API first
+      try {
+        const res = await fetch(`/api/verify?id=${encodeURIComponent(id)}`);
+        if (res.ok) {
+          const data = await res.json();
+          renderProfile(data);
+          return;
+        }
+      } catch (apiErr) {
+        // API not available, proceed to Firestore fallback
+      }
+
+      // 2. Try Firestore fallback
+      if (db) {
+        try {
+          const snap = await getDoc(doc(db, "internships", id));
+          if (snap.exists()) {
+            const fData = snap.data();
+            const normalized = {
+              valid: fData["Certificate status"] === "Valid" || fData["Certificate status"] === "Completed",
+              status: fData["Certificate status"] || "Valid",
+              certificate_id: fData.certificateId || fData.internId || id,
+              intern: {
+                intern_id: fData.internId || id,
+                full_name: fData.name || fData.Name || "Intern",
+                domain: fData.Domain || fData.domain || "Full Stack Development",
+                organisation: fData.Organisation || fData.organisation || "Problem Solving Mind",
+                duration_label: fData.Duration || fData.duration || "Internship Term",
+                photo_url: fData.photoUrl || null,
+              },
+              project: fData.project || null,
+              evaluation: fData.evaluation || null,
+            };
+            renderProfile(normalized);
+            return;
+          }
+        } catch (fErr) {
+          console.warn("Firestore fallback error:", fErr);
+        }
+      }
+
+      // Not found state
+      statusContainer.innerHTML = `
+        <div class="status-banner not-found">
+          <div>
+            <strong>⚠️ Record Not Found</strong>
+            <p>No verified certificate or intern profile matching '${escapeHtml(id)}' was found.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProfile(data) {
+      const { intern, project, evaluation, certificate, status, valid } = data;
+      const isRevoked = status === "Revoked" || certificate?.status === "Revoked";
+      const isValid = valid && !isRevoked;
+
+      statusContainer.innerHTML = isRevoked ? `
+        <div class="status-banner revoked">
+          <div>
+            <strong>⚠️ CERTIFICATE REVOKED</strong>
+            <p>This certificate was officially revoked by Problem Solving Mind.</p>
+            ${certificate?.revocation_reason ? `<p style="margin-top:4px"><strong>Reason:</strong> ${escapeHtml(certificate.revocation_reason)}</p>` : ''}
+          </div>
+        </div>
+      ` : isValid ? `
+        <div class="status-banner valid">
+          <div>
+            <strong>✓ OFFICIALLY VERIFIED INTERN CREDENTIAL</strong>
+            <p>This certificate record is authentic and registered in the PSM credential database.</p>
+          </div>
+        </div>
+      ` : `
+        <div class="status-banner not-found">
+          <div><strong>Status: ${escapeHtml(status || 'Pending')}</strong></div>
+        </div>
+      `;
+
+      profileContainer.innerHTML = `
+        <!-- Profile Header -->
+        <div class="header-card">
+          <div class="profile-hero">
+            ${intern.photo_url ? 
+              `<img src="${intern.photo_url}" alt="${escapeHtml(intern.full_name)}" class="photo-frame" onerror="this.style.display='none'">` :
+              `<div class="avatar-fallback">${escapeHtml((intern.full_name || 'PSM').slice(0, 2).toUpperCase())}</div>`
+            }
+            <div class="profile-meta">
+              <div class="chips" style="margin-bottom:6px">
+                <span class="chip">${escapeHtml(intern.organisation || 'Problem Solving Mind')}</span>
+                <span class="badge ${isValid ? 'valid' : isRevoked ? 'revoked' : 'not-found'}">${escapeHtml(status || 'Valid')}</span>
+              </div>
+              <h2>${escapeHtml(intern.full_name)}</h2>
+              <p class="domain">${escapeHtml(intern.domain)}</p>
+              <div class="chips">
+                <span class="chip">ID: ${escapeHtml(intern.intern_id)}</span>
+                ${data.certificate_id ? `<span class="chip">Cert: ${escapeHtml(data.certificate_id)}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section A: Professional Details -->
+        <div class="profile-card">
+          <div class="section-title"><span class="section-badge">A</span> Professional Details</div>
+          <div class="details-grid">
+            <div class="detail-box">
+              <div class="lbl">Duration</div>
+              <div class="val">${escapeHtml(intern.duration_label || 'Completed')}</div>
+            </div>
+            ${intern.start_date ? `
+            <div class="detail-box">
+              <div class="lbl">Start Date</div>
+              <div class="val">${escapeHtml(intern.start_date)}</div>
+            </div>` : ''}
+            ${intern.end_date ? `
+            <div class="detail-box">
+              <div class="lbl">End Date</div>
+              <div class="val">${escapeHtml(intern.end_date)}</div>
+            </div>` : ''}
+            <div class="detail-box">
+              <div class="lbl">Organization</div>
+              <div class="val">${escapeHtml(intern.organisation || 'Problem Solving Mind')}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section B: Project Portfolio -->
+        ${project ? `
+        <div class="profile-card">
+          <div class="section-title"><span class="section-badge">B</span> Project Portfolio</div>
+          <h3 style="color:var(--navy);margin-bottom:6px">${escapeHtml(project.title)}</h3>
+          <p class="muted" style="margin-bottom:12px">${escapeHtml(project.description || '')}</p>
+          ${project.technologies ? `<p style="font-size:13px;margin-bottom:12px"><strong>Technologies:</strong> ${escapeHtml(project.technologies)}</p>` : ''}
+          ${project.achievements ? `<div class="feedback-box" style="margin-bottom:12px"><strong>Achievements:</strong> ${escapeHtml(project.achievements)}</div>` : ''}
+          ${project.github_url ? `
+            <a href="${escapeHtml(project.github_url)}" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              View GitHub Repository ↗
+            </a>
+          ` : ''}
+        </div>` : ''}
+
+        <!-- Section C: Mentor Evaluation & Marks -->
+        ${evaluation ? `
+        <div class="profile-card">
+          <div class="section-title"><span class="section-badge">C</span> Mentor Evaluation & Marks</div>
+          ${evaluation.mentor?.name || evaluation.mentorName ? `<p class="muted" style="margin-bottom:8px">Assessed by Mentor: <strong>${escapeHtml(evaluation.mentor?.name || evaluation.mentorName)}</strong></p>` : ''}
+          <table>
+            <thead>
+              <tr>
+                <th>Evaluation Category</th>
+                <th style="text-align:center">Marks Awarded</th>
+                <th style="text-align:center">Maximum Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Technical Skills</td><td align="center">${evaluation.technical_skills ?? evaluation.technicalSkills ?? 0}</td><td align="center">${evaluation.max_technical_skills || 20}</td></tr>
+              <tr><td>Problem Solving</td><td align="center">${evaluation.problem_solving ?? evaluation.problemSolving ?? 0}</td><td align="center">${evaluation.max_problem_solving || 20}</td></tr>
+              <tr><td>Code Quality</td><td align="center">${evaluation.code_quality ?? evaluation.codeQuality ?? 0}</td><td align="center">${evaluation.max_code_quality || 20}</td></tr>
+              <tr><td>Communication</td><td align="center">${evaluation.communication ?? 0}</td><td align="center">${evaluation.max_communication || 20}</td></tr>
+              <tr><td>Project Evaluation</td><td align="center">${evaluation.project_evaluation ?? evaluation.projectEvaluation ?? evaluation.teamwork ?? 0}</td><td align="center">${evaluation.max_project_evaluation || 20}</td></tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td>Total Marks</td>
+                <td align="center">${evaluation.total_marks ?? evaluation.totalMarks ?? 0}</td>
+                <td align="center">${evaluation.max_total_marks ?? evaluation.maxTotalMarks ?? 100} (${evaluation.percentage ?? 0}%)</td>
+              </tr>
+            </tfoot>
+          </table>
+          ${evaluation.grade ? `<p style="margin-top:12px"><strong>Performance Grade:</strong> <span class="badge valid">Grade ${escapeHtml(evaluation.grade)}</span></p>` : ''}
+          ${evaluation.feedback ? `<div class="feedback-box">“${escapeHtml(evaluation.feedback)}”</div>` : ''}
+        </div>` : ''}
+
+        <!-- Section D: Certificate Verification -->
+        <div class="profile-card">
+          <div class="section-title"><span class="section-badge">D</span> Certificate Verification</div>
+          <div class="details-grid">
+            <div class="detail-box">
+              <div class="lbl">Certificate ID</div>
+              <div class="val">${escapeHtml(data.certificate_id || intern.intern_id)}</div>
+            </div>
+            <div class="detail-box">
+              <div class="lbl">Status</div>
+              <div class="val">${escapeHtml(status || 'Valid')}</div>
+            </div>
+          </div>
+          <div class="btn-row">
+            ${data.certificate_id ? `<a href="/api/certificates/${encodeURIComponent(data.certificate_id)}/pdf" class="btn-primary" target="_blank">Download PDF Certificate</a>` : ''}
+            <a href="/intern/${encodeURIComponent(intern.intern_id)}/id-card" class="btn-secondary" target="_blank">View Intern ID Card</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

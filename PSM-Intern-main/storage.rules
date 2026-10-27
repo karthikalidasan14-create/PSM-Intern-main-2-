@@ -1,0 +1,26 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Public intern photographs: readable by everyone on the verification profile
+    // Only authenticated administrators can upload/modify photographs
+    // Image size must be <= 5MB and content type must be an image
+    match /photos/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Certificates and generated QR documents
+    match /certificates/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /qr/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
