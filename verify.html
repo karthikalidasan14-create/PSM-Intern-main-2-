@@ -1,0 +1,21 @@
+<!-- Same clean implementation for public directory -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSM Certificate & Intern Verification</title>
+  <script>
+    // If running in SPA mode, redirect to /verify preserving query params
+    const search = window.location.search;
+    if (window.location.pathname.endsWith("verify.html")) {
+      window.location.replace("/verify" + search);
+    }
+  </script>
+</head>
+<body>
+  <p style="font-family: sans-serif; text-align: center; margin-top: 50px; color: #10264b;">
+    Redirecting to PSM Certificate Verification Platform...
+  </p>
+</body>
+</html>
