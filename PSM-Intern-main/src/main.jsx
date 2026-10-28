@@ -7,7 +7,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter basename="/PSM-Intern">
+    <BrowserRouter basename="/PSM-Intern-main-2-">
       <AuthProvider>
         <App />
       </AuthProvider>
