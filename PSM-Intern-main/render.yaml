@@ -14,8 +14,8 @@ services:
       - key: FRONTEND_URL
         value: https://karthikalidasan14-create.github.io/PSM-Intern
       - key: ADMIN_EMAIL
-        value: admin@problemsolvingmind.org
+        sync: false
       - key: ADMIN_PASSWORD
-        value: Admin@123
+        sync: false
       - key: UPLOAD_FOLDER
         value: uploads
