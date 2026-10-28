@@ -1,3 +1,4 @@
+
 name: Deploy to GitHub Pages
 
 on:
@@ -12,6 +13,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: PSM-Intern-main
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,7 +25,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          cache: npm
+          cache-dependency-path: PSM-Intern-main/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -30,9 +36,10 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Deploy to gh-pages branch
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: PSM-Intern-main/dist
+
 
