@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import StatusBadge from "./StatusBadge.jsx";
-import { PublicAPI } from "./api.js";
+import { PublicAPI, resolveMediaUrl } from "./api.js";
 
 export default function InternIdCard() {
   const { internId } = useParams();
@@ -99,7 +99,7 @@ export default function InternIdCard() {
               <div className="id-photo-frame">
                 {data.photo_url ? (
                   <img
-                    src={data.photo_url}
+                    src={resolveMediaUrl(data.photo_url)}
                     alt={data.full_name}
                     className="id-photo"
                   />
@@ -128,7 +128,7 @@ export default function InternIdCard() {
 
               <div className="id-qr-section">
                 <img
-                  src={data.qr_url}
+                  src={resolveMediaUrl(data.qr_url)}
                   alt="Scannable Verification QR"
                   className="id-qr-img"
                 />

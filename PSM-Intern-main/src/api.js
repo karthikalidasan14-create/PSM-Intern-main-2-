@@ -1,6 +1,24 @@
-const BASE_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
+
+const API_ORIGIN = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+
+const BASE_URL = API_ORIGIN
+  ? `${API_ORIGIN}/api`
   : "/api";
+
+export function resolveMediaUrl(url) {
+  if (!url) return "";
+
+  if (/^(https?:|data:|blob:)/i.test(url)) {
+    return url;
+  }
+
+  if (API_ORIGIN) {
+    return `${API_ORIGIN}${url.startsWith("/") ? url : `/${url}`}`;
+  }
+
+  return url;
+}
+
 
 function getHeaders(isMultipart = false) {
   const headers = {};
